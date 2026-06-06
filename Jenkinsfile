@@ -216,9 +216,9 @@ pipeline{
 
         failure{
             echo "========Deployment failed========"
-        }
-    }
-}
+                }
+                }
+            }
     post {
         success {
             echo "======== Application deployed successfully! Visit http://${env.VM_IP} to view your app. ========"
