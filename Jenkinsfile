@@ -107,7 +107,7 @@ pipeline{
                  usernameVariable: 'dockeruser')]) 
                  {
                     echo "Login to docker"
-                    bat 'echo %dokcerpass%| docker login -u %dockeruser% --password-stdin'
+                    bat 'echo %dockerpass%| docker login -u %dockeruser% --password-stdin'
                     echo "Login to docker is successful"
                 }
                 }
