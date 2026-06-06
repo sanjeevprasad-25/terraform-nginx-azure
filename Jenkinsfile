@@ -105,7 +105,11 @@ pipeline{
                 (credentialsId: 'Dockeruser', 
                  passwordVariable: 'user_password',
                  usernameVariable: 'user_docker')]) 
-                 sh 'echo $user_password | docker login -u $user_docker --password-stdin'
+                 {
+                    echo "Login to docker"
+                    bat 'echo %dockerpass%| docker login -u %dockeruser% --password-stdin'
+                    echo "Login to docker is successful"
+                }
                 }
             post{
                 success{
@@ -119,7 +123,7 @@ pipeline{
         stage("Pushing Image"){
             steps{
                 echo "========Pushing Image to Docker Hub ========"
-                sh 'docker push sanjeevprasad1983/nginx-azure-app:latest'
+                bat 'docker push sanjeevprasad1983/nginx-azure-app:latest'
                 }
             post{
                 success{
