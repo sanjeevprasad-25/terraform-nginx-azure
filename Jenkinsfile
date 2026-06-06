@@ -140,7 +140,7 @@ pipeline{
                 script {
                 echo "======== capturing public IP ========"
                 env.VM_IP = sh(
-                script: "terraform output -raw Sptechno_Public_ip",
+                script: "terraform output -raw Sptechno_Public_IP",
                 returnStdout: true
                 ).trim()
                 echo "VM IP: ${env.VM_IP}"
