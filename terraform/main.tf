@@ -68,7 +68,7 @@ resource "azurerm_linux_virtual_machine" "web_vm" {
     computer_name = "linux-vm"
     resource_group_name = azurerm_resource_group.rg_web.name
     location = azurerm_resource_group.rg_web.location
-    size = "Standard_B1s"
+    size = "Standard_B2ats_v2"
     admin_username = "azureuser"
     admin_ssh_key {
     username   = "azureuser"
