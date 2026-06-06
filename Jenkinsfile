@@ -202,7 +202,7 @@ pipeline{
                     withCredentials([sshUserPrivateKey(credentialsId: 'azure-vm-ssh-key', keyFileVariable: 'KEY_FILE', usernameVariable: 'SSH_USER')]) {
                         bat """
                             echo Connecting to VM to deploy Nginx...
-                            ssh -i "%KEY_FILE%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL %SSH_USER%@${env.VM_IP} "sudo docker run -d -p 80:80 --name nginx-server nginx"
+                            ssh -i "%KEY_FILE%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL %SSH_USER%@${env.VM_IP} "sudo docker run -d -p 80:80 --name nginx-azure-server nginx"
                         """
                     }
                 }
