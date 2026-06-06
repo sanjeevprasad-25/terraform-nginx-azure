@@ -195,24 +195,30 @@ pipeline{
                 failure { echo "======== Docker installation failed ========" }
             }
         }
-        stage("Deploying Nginx Container to Azure VM") {
-            steps {
-                script {
-                    echo "======== Deploying Nginx Container ========"
-                    withCredentials([sshUserPrivateKey(credentialsId: 'azure-vm-ssh-key', keyFileVariable: 'KEY_FILE', usernameVariable: 'SSH_USER')]) {
-                        bat """
-                            echo Connecting to VM to deploy Nginx...
-                            ssh -i "%KEY_FILE%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL %SSH_USER%@${env.VM_IP} "sudo docker run -d -p 80:80 --name nginx-azure-server nginx"
-                        """
-                    }
-                }
-            }   
-            post {
-                success { echo "======== Deployment successfully ========" }
-                failure { echo "======== Deployment failed. Check Docker logs on the VM. ========" }
-                }
-            }
-    } 
+        stage("Deploying Nginx Container to Azure VM"){
+    steps{
+        echo "========Deploying Nginx Container========"
+
+        sh '''
+        ssh -i key.pem azureuser@20.197.30.115 "
+        docker stop nginx-container || true &&
+        docker rm nginx-container || true &&
+        docker pull sanjeevprasad1983/nginx-azure-app:latest &&
+        docker run -d --name nginx-container -p 80:80 sanjeevprasad1983/nginx-azure-app:latest
+        "
+        '''
+    }
+
+    post{
+        success{
+            echo "========Application deployed successfully========"
+        }
+
+        failure{
+            echo "========Deployment failed========"
+        }
+    }
+}
     post {
         success {
             echo "======== Application deployed successfully! Visit http://${env.VM_IP} to view your app. ========"
@@ -221,6 +227,7 @@ pipeline{
             echo "======== Deployment failed. Check Docker logs on the VM. ========"
         }
     }
+}
 }
 
  
