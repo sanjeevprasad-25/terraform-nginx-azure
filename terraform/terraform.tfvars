@@ -1,0 +1,6 @@
+rg_name = "sptechno"
+rg_location = "Central India"
+rg_env = "Production"
+web_net = "sptechno-network"
+web_sn = "sptechno-subnet"
+web_vm_password = "Pass@1234"
