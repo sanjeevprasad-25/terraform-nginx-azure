@@ -159,11 +159,11 @@ pipeline{
             steps {
                 script {
                  echo "======== login VM ========"
-                 sshagent(['azure-vm-ssh-key']) {
-                 sh """
-                 ssh -o StrictHostKeyChecking=no azureuser@${env.VM_IP} "echo 'Connected to VM successfully' "               
-                """
-                          }
+                 dir('terraform') {
+                        bat """
+                            ssh -i azure_vm_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL azureuser@${env.VM_IP} "echo Connected successfully"
+                        """
+                                 }
                         }
                     }   
              post {
