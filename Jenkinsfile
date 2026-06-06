@@ -177,33 +177,23 @@ pipeline{
                  }
                 }
               }                    
-        stage("Deploy Docker Container") {
+        stage("Deploying Nginx Container to Azure VM") {
             steps {
-                 script {
-                    echo "======== Deploying Nginx Container to Azure VM ========"
-                    sshagent(['azure-vm-ssh-key']) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no azureuser@${env.VM_IP} "
-                        # 1. Update package list and ensure Docker is running
-                        sudo apt-get update -y && sudo systemctl start docker
-
-                        # 2. Pull the latest image from Docker Hub
-                        # (Replace 'your_dockerhub_username' and 'nginx-web-app' with your actual details)
-                        sudo docker pull sanjeevprasad1983/nginx-azure-app:latest
-
-                        # 3. Stop the existing container if it is already running
-                        sudo docker stop my-nginx-container || true
-
-                        # 4. Remove the old container to free up the name and port
-                        sudo docker rm my-nginx-container || true
-
-                        # 5. Run the new container mapping Port 80 on the VM to Port 80 in the container
-                        sudo docker run -d -p 80:80 --name my-nginx-container sanjeevprasad1983/nginx-web-app:latest
-                    "
-                """
+                script {
+                    echo "======== Deploying Nginx Container ========"
+                    withCredentials([sshUserPrivateKey(credentialsId: 'azure-vm-ssh-key', keyFileVariable: 'KEY_FILE', usernameVariable: 'SSH_USER')]) {
+                        bat """
+                            echo Connecting to VM to deploy Nginx...
+                            ssh -i "%KEY_FILE%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL %SSH_USER%@${env.VM_IP} "sudo docker run -d -p 80:80 --name nginx-server nginx"
+                        """
+                    }
+                }
+            }   
+            post {
+                success { echo "======== Deployment successfully ========" }
+                failure { echo "======== Deployment failed. Check Docker logs on the VM. ========" }
             }
         }
-    }
     post {
         success {
             echo "======== Application deployed successfully! Visit http://${env.VM_IP} to view your app. ========"
@@ -213,6 +203,7 @@ pipeline{
         }
     }
 }
-    }
- }    
+}
+ 
+  
 
