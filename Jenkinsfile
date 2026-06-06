@@ -176,7 +176,34 @@ pipeline{
                  echo "======== login failed ========"
                  }
                 }
-              }                    
+              }  
+        stage("Install Docker on Azure VM") {
+            steps {
+                script {
+                    echo "======== Installing Docker on Azure VM ========"
+                    withCredentials([sshUserPrivateKey(credentialsId: 'azure-vm-ssh-key', keyFileVariable: 'KEY_FILE', usernameVariable: 'SSH_USER')]) {
+                        bat """
+                            echo Connecting via SSH to install dependencies...
+                            
+                            ssh -i "%KEY_FILE%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL %SSH_USER%@${env.VM_IP} ^
+                            "sudo apt-get update -y && ^
+                             sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common && ^
+                             curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && ^
+                             echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable' | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && ^
+                             sudo apt-get update -y && ^
+                             sudo apt-get install -y docker-ce docker-ce-cli containerd.io && ^
+                             sudo systemctl start docker && ^
+                             sudo systemctl enable docker && ^
+                             sudo usermod -aG docker %SSH_USER%"
+                        """
+                    }
+                }
+            }
+            post {
+                success { echo "======== Docker installed successfully ========" }
+                failure { echo "======== Docker installation failed ========" }
+            }
+        }
         stage("Deploying Nginx Container to Azure VM") {
             steps {
                 script {
