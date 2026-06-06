@@ -196,40 +196,33 @@ pipeline{
             }
         }
         stage("Deploying Nginx Container to Azure VM"){
-    steps{
-        echo "========Deploying Nginx Container========"
-
-        sh '''
-        ssh -i key.pem azureuser@20.197.30.115 "
-        docker stop nginx-container || true &&
-        docker rm nginx-container || true &&
-        docker pull sanjeevprasad1983/nginx-azure-app:latest &&
-        docker run -d --name nginx-container -p 80:80 sanjeevprasad1983/nginx-azure-app:latest
-        "
-        '''
-    }
-
-    post{
-        success{
-            echo "========Application deployed successfully========"
-        }
-
-        failure{
-            echo "========Deployment failed========"
+            steps{
+                echo "========Deploying Nginx Container========"
+                    bat '''
+                        ssh -i key.pem azureuser@20.197.30.115 "
+                        docker stop nginx-container || true &&
+                        docker rm nginx-container || true &&
+                        docker pull sanjeevprasad1983/nginx-azure-app:latest &&
+                        docker run -d --name nginx-container -p 80:80 sanjeevprasad1983/nginx-azure-app:latest
+                        "
+                        '''
+                    }
+            post{
+                 success{
+                    echo "========Application deployed successfully========"
+                        }
+                failure{
+                    echo "========Deployment failed========"
+                      }
+                    }
                 }
+         post {
+            success {
+                 echo "======== Application deployed successfully! Visit http://${env.VM_IP} to view your app. ========"
+                    }
+            failure {
+                echo "======== Deployment failed. Check Docker logs on the VM. ========"
                 }
+             }
             }
-    post {
-        success {
-            echo "======== Application deployed successfully! Visit http://${env.VM_IP} to view your app. ========"
         }
-        failure {
-            echo "======== Deployment failed. Check Docker logs on the VM. ========"
-        }
-    }
-}
-}
-
- 
-  
-
