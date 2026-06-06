@@ -22,6 +22,7 @@ resource "azurerm_public_ip" "rg_web_public_ip" {
     resource_group_name = azurerm_resource_group.rg_web.name
     location = azurerm_resource_group.rg_web.location
     allocation_method= "Static"
+    sku = "Standard"
     tags= {
         environment= var.rg_env
     }  
