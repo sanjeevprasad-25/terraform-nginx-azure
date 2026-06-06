@@ -159,13 +159,15 @@ pipeline{
             steps {
                 script {
                  echo "======== login VM ========"
-                 dir('terraform') {
+                 // This extracts your private key safely into a temporary variable
+                    withCredentials([sshUserPrivateKey(credentialsId: 'azure-vm-ssh-key', keyFileVariable: 'KEY_FILE', usernameVariable: 'SSH_USER')]) {
                         bat """
-                            ssh -i azure_vm_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL azureuser@${env.VM_IP} "echo Connected successfully"
+                            echo Attempting SSH connection using Jenkins-managed key...
+                            ssh -i "%KEY_FILE%" -o StrictHostKeyChecking=no -o UserKnownHostsFile=NUL %SSH_USER%@${env.VM_IP} "echo Connected successfully"
                         """
-                                 }
-                        }
-                    }   
+                    }
+                }
+            }
              post {
                 success {
                  echo "======== login successfully ========"
