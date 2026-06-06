@@ -71,7 +71,7 @@ pipeline{
            stage("Docker build"){
             steps{
                 echo "========Building Docker Image ========"
-                sh 'docker build -t sanjeevprasad1983/nginx-azure-app:latest .'
+                sh 'docker build --no-cache -t sanjeevprasad1983/nginx-azure-app:latest .'
                     }
                   
             post{
