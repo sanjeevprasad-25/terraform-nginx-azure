@@ -192,8 +192,9 @@ pipeline{
             post {
                 success { echo "======== Deployment successfully ========" }
                 failure { echo "======== Deployment failed. Check Docker logs on the VM. ========" }
+                }
             }
-        }
+    } 
     post {
         success {
             echo "======== Application deployed successfully! Visit http://${env.VM_IP} to view your app. ========"
@@ -203,7 +204,7 @@ pipeline{
         }
     }
 }
-}
+
  
   
 
